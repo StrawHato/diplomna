@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import React from "react";
 
 function TaskItem({ task, setTasks, onDragStart, onDragOver, onDrop }) {
   const [isEditing, setIsEditing] = useState(false);
   const [newText, setNewText] = useState(task.text);
 
-  const toggleTask = async () => {
+  const toggleTask = useCallback(async () => {
     await fetch(`http://localhost:3000/tasks/${task.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -16,20 +17,20 @@ function TaskItem({ task, setTasks, onDragStart, onDragOver, onDrop }) {
         t.id === task.id ? { ...t, completed: !t.completed } : t
       )
     );
-  };
+  }, [task, setTasks]);
 
-  const deleteTask = async () => {
+  const deleteTask = useCallback(async () => {
     if (window.confirm("Ви впевнені, що хочете видалити це завдання?")) {
       await fetch(`http://localhost:3000/tasks/${task.id}`, { method: "DELETE" });
       setTasks((prevTasks) => prevTasks.filter((t) => t.id !== task.id));
     }
-  };
+  }, [task, setTasks]);
 
-  const enableEditing = () => {
+  const enableEditing = useCallback(() => {
     setIsEditing(true);
-  };
+  }, []);
 
-  const saveEdit = async () => {
+  const saveEdit = useCallback(async () => {
     if (!newText.trim()) return;
     await fetch(`http://localhost:3000/tasks/${task.id}`, {
       method: "PATCH",
@@ -41,7 +42,7 @@ function TaskItem({ task, setTasks, onDragStart, onDragOver, onDrop }) {
       prevTasks.map((t) => (t.id === task.id ? { ...t, text: newText } : t))
     );
     setIsEditing(false);
-  };
+  }, [newText, task, setTasks]);
 
   return (
     <li
@@ -69,4 +70,4 @@ function TaskItem({ task, setTasks, onDragStart, onDragOver, onDrop }) {
   );
 }
 
-export default TaskItem;
+export default React.memo(TaskItem);

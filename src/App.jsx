@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import TaskList from "./components/TaskList";
 import TaskInput from "./components/TaskInput";
 import Filters from "./components/Filters";
@@ -11,6 +11,16 @@ function App() {
     return localStorage.getItem("taskFilter") || "all";
   });
 
+  //Динамічне підключення фонового зображення (lazy load)
+  useEffect(() => {
+    const img = new Image();
+    img.src = "/background.jpg";
+    img.onload = () => {
+      document.body.style.background = `url("${img.src}") no-repeat center center fixed`;
+      document.body.style.backgroundSize = "cover";
+    };
+  }, []);
+
   useEffect(() => {
     fetchTasks().then(setTasks);
   }, []);
@@ -19,9 +29,16 @@ function App() {
     localStorage.setItem("taskFilter", filter);
   }, [filter]);
 
-  const totalTasks = tasks.length;
-  const activeTasks = tasks.filter((task) => !task.completed).length;
-  const completedTasks = totalTasks - activeTasks;
+  const totalTasks = useMemo(() => tasks.length, [tasks]);
+  const activeTasks = useMemo(
+    () => tasks.filter((task) => !task.completed).length,
+    [tasks]
+  );
+  const completedTasks = useMemo(() => totalTasks - activeTasks, [totalTasks, activeTasks]);
+
+  const handleSetFilter = useCallback((newFilter) => {
+    setFilter(newFilter);
+  }, []);
 
   return (
     <div className="container">
@@ -29,7 +46,7 @@ function App() {
       <TaskInput setTasks={setTasks} />
       <Filters
         filter={filter}
-        setFilter={setFilter}
+        setFilter={handleSetFilter}
         totalTasks={totalTasks}
         activeTasks={activeTasks}
         completedTasks={completedTasks}

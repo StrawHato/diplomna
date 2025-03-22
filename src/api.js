@@ -29,3 +29,18 @@ export const toggleTask = async (id, completed) => {
 export const deleteTask = async (id) => {
   await fetch(`${API_URL}/${id}`, { method: "DELETE" });
 };
+
+//Збереження нового порядку задач
+export const reorderTasks = async (orderedIds) => {
+  const response = await fetch(`${API_URL}/reorder`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order: orderedIds }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Не вдалося оновити порядок завдань");
+  }
+
+  return response.json();
+};
