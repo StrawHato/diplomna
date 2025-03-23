@@ -1,12 +1,64 @@
-# React + Vite
+# Virtualized User Search Demo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Цей тестовий React-додаток демонструє ефективність оптимізації продуктивності при роботі з великим списком елементів за допомогою наступних інструментів:
 
-Currently, two official plugins are available:
+-  **react-virtualized** — для віртуалізації великого списку користувачів
+-  **debounce** — для оптимізації введення у полі пошуку
+-  **React Profiler** — для замірів продуктивності компонентів у реальному часі
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Технології
 
-## Expanding the ESLint configuration
+- React 18 + Vite
+- `@faker-js/faker` — генерація фейкових користувачів
+- `react-virtualized` — оптимізація рендеру списку
+- `lodash` (опціонально для дебаунсу) або власний `useDebounce` хук
+- React Profiler API
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Структура проєкту
+
+```
+src/
+├── components/
+│   ├── VirtualizedList.jsx     // Список з віртуалізацією
+│   ├── FullList.jsx            // Для порівняння без оптимізації
+│   └── SearchInput.jsx         // Поле пошуку
+├── hooks/
+│   └── useDebounce.js
+├── data/
+│   └── generateFakeUsers.js
+├── App.jsx
+```
+
+---
+
+## Результати тестування
+
+### З `react-virtualized`:
+- `actualDuration`: **~2-3ms**
+- Компоненти рендеряться лише в межах видимої області
+- Плавна робота навіть при 10 000+ елементах
+
+### Без віртуалізації:
+- `actualDuration`: **~270ms+**
+- Весь список рендериться одразу
+- Значно більші затрати пам’яті та часу
+
+---
+
+## Як запустити локально
+
+```bash
+git clone https://github.com/StrawHato/diplomna.git
+cd virtualized-search-demo
+
+npm install
+npm run dev
+```
+
+---
+
+## 📘 Ціль
+
+Цей тестовий приклад використовується для демонстрації переваг оптимізації рендерингу великих списків у дипломній роботі.
+Для дипломної роботи на тему:  
+**"Оптимізація продуктивності веб-додатків на React: методи та інструменти"**
